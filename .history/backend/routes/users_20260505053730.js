@@ -1,5 +1,4 @@
 import express from 'express';
-import bcryptjs from 'bcryptjs';
 import pool from '../config/database.js';
 
 const router = express.Router();
@@ -38,24 +37,8 @@ router.post('/', async (req, res) => {
   try {
     const { username, password, full_name, role, email } = req.body;
 
-    // Input validation
     if (!username || !password || !full_name || !role || !email) {
       return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({ error: 'Invalid email format' });
-    }
-
-    // Validate password strength
-    if (password.length < 6) {
-      return res.status(400).json({ error: 'Password must be at least 6 characters long' });
-    }
-
-    if (username.length < 3) {
-      return res.status(400).json({ error: 'Username must be at least 3 characters long' });
     }
 
     const connection = await pool.getConnection();
@@ -67,17 +50,12 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Username already exists' });
     }
 
-    // Hash password with bcrypt
-    const saltRounds = 10;
-    const hashedPassword = await bcryptjs.hash(password, saltRounds);
-    
+    // TODO: Hash password with bcrypt before storing
     const [result] = await connection.query(
       'INSERT INTO users (username, password, full_name, role, email, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 1, NOW(), NOW())',
-      [username, hashedPassword, full_name, role, email]
+      [username, password, full_name, role, email]
     );
     connection.release();
-
-    console.log(`New user created: ${username}`);
 
     res.status(201).json({
       id: result.insertId,
@@ -87,7 +65,6 @@ router.post('/', async (req, res) => {
       email
     });
   } catch (error) {
-    console.error('Error creating user:', error);
     res.status(500).json({ error: error.message });
   }
 });

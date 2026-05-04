@@ -40,11 +40,6 @@ router.post('/', async (req, res) => {
       guardian, contact_number, beneficiary, has_allergy, allergy_notes, remarks
     } = req.body;
 
-    // Input validation
-    if (!student_id || !full_name || !grade || !section) {
-      return res.status(400).json({ error: 'Missing required fields: student_id, full_name, grade, section' });
-    }
-
     const connection = await pool.getConnection();
     
     // Check if student_id already exists
@@ -62,15 +57,12 @@ router.post('/', async (req, res) => {
     );
     connection.release();
 
-    console.log(`New student created: ${full_name} (${student_id})`);
-
     res.status(201).json({
       id: result.insertId,
       student_id,
       full_name
     });
   } catch (error) {
-    console.error('Error creating student:', error);
     res.status(500).json({ error: error.message });
   }
 });

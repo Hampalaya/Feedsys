@@ -9,13 +9,8 @@ router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Input validation
     if (!username || !password) {
       return res.status(400).json({ error: 'Username and password are required' });
-    }
-
-    if (username.trim().length === 0 || password.length === 0) {
-      return res.status(400).json({ error: 'Invalid username or password' });
     }
 
     const connection = await pool.getConnection();
@@ -52,7 +47,6 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Login error:', error);
     res.status(500).json({ error: 'Login failed', message: error.message });
   }
 });

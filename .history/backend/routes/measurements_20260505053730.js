@@ -55,16 +55,6 @@ router.post('/', async (req, res) => {
       student_id, student_name, measurement_type, date, weight, height, bmi, nutritional_status, measured_by, remarks
     } = req.body;
 
-    // Input validation
-    if (!student_id || !date || weight === undefined || height === undefined) {
-      return res.status(400).json({ error: 'Missing required fields: student_id, date, weight, height' });
-    }
-
-    // Validate numeric values
-    if (isNaN(weight) || isNaN(height) || weight <= 0 || height <= 0) {
-      return res.status(400).json({ error: 'Weight and height must be positive numbers' });
-    }
-
     const connection = await pool.getConnection();
     const [result] = await connection.query(
       `INSERT INTO measurements (student_id, student_name, measurement_type, date, weight, height, bmi, 
@@ -74,8 +64,6 @@ router.post('/', async (req, res) => {
     );
     connection.release();
 
-    console.log(`New measurement created for student ${student_id}`);
-
     res.status(201).json({
       id: result.insertId,
       student_id,
@@ -84,7 +72,6 @@ router.post('/', async (req, res) => {
       nutritional_status
     });
   } catch (error) {
-    console.error('Error creating measurement:', error);
     res.status(500).json({ error: error.message });
   }
 });

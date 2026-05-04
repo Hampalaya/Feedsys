@@ -67,7 +67,7 @@ interface AppContextType {
   
   users: User[];
   currentUser: User | null;
-  login: (username: string, password: string) => Promise<boolean>;
+  login: (username: string, password: string) => boolean;
   logout: () => void;
 }
 
