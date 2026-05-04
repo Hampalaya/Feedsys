@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { studentsAPI, measurementsAPI, attendanceAPI } from "../../lib/api";
 
 // Types
 export interface Student {
@@ -53,18 +54,19 @@ export interface User {
 
 interface AppContextType {
   students: Student[];
-  addStudent: (student: Omit<Student, "id" | "createdAt">) => void;
-  updateStudent: (id: string, student: Partial<Student>) => void;
-  deleteStudent: (id: string) => void;
-  
+  addStudent: (student: Omit<Student, "id" | "createdAt">) => Promise<void>;
+  updateStudent: (id: string, student: Partial<Student>) => Promise<void>;
+  deleteStudent: (id: string) => Promise<void>;
+  loading: boolean;
+
   measurements: Measurement[];
   addMeasurement: (measurement: Omit<Measurement, "id">) => void;
   getMeasurementsByStudent: (studentId: string) => Measurement[];
-  
+
   attendanceRecords: Attendance[];
   addAttendance: (attendance: Omit<Attendance, "id">) => void;
   getAttendanceByDate: (date: string) => Attendance[];
-  
+
   users: User[];
   currentUser: User | null;
   login: (username: string, password: string) => Promise<boolean>;
@@ -425,31 +427,157 @@ const initialUsers: User[] = [
 ];
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [students, setStudents] = useState<Student[]>(initialStudents);
-  const [measurements, setMeasurements] = useState<Measurement[]>(initialMeasurements);
-  const [attendanceRecords, setAttendanceRecords] = useState<Attendance[]>(initialAttendance);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [measurements, setMeasurements] = useState<Measurement[]>([]);
+  const [attendanceRecords, setAttendanceRecords] = useState<Attendance[]>([]);
   const [users] = useState<User[]>(initialUsers);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const addStudent = (student: Omit<Student, "id" | "createdAt">) => {
-    const newStudent: Student = {
-      ...student,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
+  // Fetch data from API on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [studentsData, measurementsData, attendanceData] = await Promise.all([
+          studentsAPI.getAll(),
+          measurementsAPI.getAll(),
+          attendanceAPI.getAll()
+        ]);
+
+        // Transform API data to match frontend types
+        const transformedStudents: Student[] = studentsData.map((s: any) => ({
+          id: s.id.toString(),
+          studentId: s.student_id,
+          lrn: s.lrn,
+          fullName: s.full_name,
+          grade: s.grade,
+          section: s.section,
+          sex: s.sex,
+          dateOfBirth: s.date_of_birth,
+          guardian: s.guardian,
+          contactNumber: s.contact_number,
+          beneficiary: Boolean(s.beneficiary),
+          hasAllergy: Boolean(s.has_allergy),
+          allergyNotes: s.allergy_notes || "",
+          remarks: s.remarks || "",
+          createdAt: s.created_at,
+        }));
+
+        const transformedMeasurements: Measurement[] = measurementsData.map((m: any) => ({
+          id: m.id.toString(),
+          studentId: m.student_id.toString(),
+          studentName: m.student_name,
+          measurementType: m.measurement_type,
+          date: m.date,
+          weight: parseFloat(m.weight),
+          height: parseFloat(m.height),
+          bmi: parseFloat(m.bmi),
+          nutritionalStatus: m.nutritional_status,
+          measuredBy: m.measured_by,
+          remarks: m.remarks || "",
+        }));
+
+        const transformedAttendance: Attendance[] = attendanceData.map((a: any) => ({
+          id: a.id.toString(),
+          studentId: a.student_id.toString(),
+          date: a.date,
+          present: Boolean(a.present),
+          mealReceived: Boolean(a.meal_received),
+          remarks: a.remarks || "",
+        }));
+
+        setStudents(transformedStudents);
+        setMeasurements(transformedMeasurements);
+        setAttendanceRecords(transformedAttendance);
+      } catch (error) {
+        console.error('Failed to fetch data from API:', error);
+        // Fallback to mock data if API fails
+        setStudents(initialStudents);
+        setMeasurements(initialMeasurements);
+        setAttendanceRecords(initialAttendance);
+      } finally {
+        setLoading(false);
+      }
     };
-    setStudents((prev) => [...prev, newStudent]);
+
+    fetchData();
+  }, []);
+
+  const addStudent = async (student: Omit<Student, "id" | "createdAt">) => {
+    try {
+      // Transform to API format
+      const apiData = {
+        student_id: student.studentId,
+        lrn: student.lrn,
+        full_name: student.fullName,
+        grade: student.grade,
+        section: student.section,
+        sex: student.sex,
+        date_of_birth: student.dateOfBirth,
+        guardian: student.guardian,
+        contact_number: student.contactNumber,
+        beneficiary: student.beneficiary,
+        has_allergy: student.hasAllergy,
+        allergy_notes: student.allergyNotes,
+        remarks: student.remarks,
+      };
+
+      const result = await studentsAPI.create(apiData);
+
+      // Add to local state with the returned ID
+      const newStudent: Student = {
+        ...student,
+        id: result.id.toString(),
+        createdAt: new Date().toISOString(),
+      };
+      setStudents((prev) => [...prev, newStudent]);
+    } catch (error) {
+      console.error('Failed to add student:', error);
+      throw error;
+    }
   };
 
-  const updateStudent = (id: string, updates: Partial<Student>) => {
-    setStudents((prev) =>
-      prev.map((student) =>
-        student.id === id ? { ...student, ...updates } : student
-      )
-    );
+  const updateStudent = async (id: string, updates: Partial<Student>) => {
+    try {
+      // Transform to API format
+      const apiData: any = {};
+      if (updates.studentId !== undefined) apiData.student_id = updates.studentId;
+      if (updates.lrn !== undefined) apiData.lrn = updates.lrn;
+      if (updates.fullName !== undefined) apiData.full_name = updates.fullName;
+      if (updates.grade !== undefined) apiData.grade = updates.grade;
+      if (updates.section !== undefined) apiData.section = updates.section;
+      if (updates.sex !== undefined) apiData.sex = updates.sex;
+      if (updates.dateOfBirth !== undefined) apiData.date_of_birth = updates.dateOfBirth;
+      if (updates.guardian !== undefined) apiData.guardian = updates.guardian;
+      if (updates.contactNumber !== undefined) apiData.contact_number = updates.contactNumber;
+      if (updates.beneficiary !== undefined) apiData.beneficiary = updates.beneficiary;
+      if (updates.hasAllergy !== undefined) apiData.has_allergy = updates.hasAllergy;
+      if (updates.allergyNotes !== undefined) apiData.allergy_notes = updates.allergyNotes;
+      if (updates.remarks !== undefined) apiData.remarks = updates.remarks;
+
+      await studentsAPI.update(id, apiData);
+
+      // Update local state
+      setStudents((prev) =>
+        prev.map((student) =>
+          student.id === id ? { ...student, ...updates } : student
+        )
+      );
+    } catch (error) {
+      console.error('Failed to update student:', error);
+      throw error;
+    }
   };
 
-  const deleteStudent = (id: string) => {
-    setStudents((prev) => prev.filter((student) => student.id !== id));
+  const deleteStudent = async (id: string) => {
+    try {
+      await studentsAPI.delete(id);
+      setStudents((prev) => prev.filter((student) => student.id !== id));
+    } catch (error) {
+      console.error('Failed to delete student:', error);
+      throw error;
+    }
   };
 
   const addMeasurement = (measurement: Omit<Measurement, "id">) => {
@@ -537,6 +665,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         addStudent,
         updateStudent,
         deleteStudent,
+        loading,
         measurements,
         addMeasurement,
         getMeasurementsByStudent,

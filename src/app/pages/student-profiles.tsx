@@ -12,7 +12,7 @@ import { useApp, Student } from "../context/app-context";
 import { motion, AnimatePresence } from "motion/react";
 
 export function StudentProfilesPage() {
-  const { students, addStudent, updateStudent, deleteStudent } = useApp();
+  const { students, addStudent, updateStudent, deleteStudent, loading } = useApp();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -54,25 +54,30 @@ export function StudentProfilesPage() {
     });
   }, [students, searchTerm, gradeFilter, sectionFilter, beneficiaryFilter]);
 
-  const handleSaveStudent = (e: React.FormEvent) => {
+  const handleSaveStudent = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.fullName || !formData.grade || !formData.section || !formData.sex) {
       toast.error("Please fill in all required fields.");
       return;
     }
 
-    if (showEditModal && selectedStudent) {
-      updateStudent(selectedStudent.id, formData);
-      toast.success("Student profile updated successfully!");
-      setShowEditModal(false);
-    } else {
-      addStudent(formData);
-      toast.success("Student profile added successfully!");
-      setShowAddModal(false);
+    try {
+      if (showEditModal && selectedStudent) {
+        await updateStudent(selectedStudent.id, formData);
+        toast.success("Student profile updated successfully!");
+        setShowEditModal(false);
+      } else {
+        await addStudent(formData);
+        toast.success("Student profile added successfully!");
+        setShowAddModal(false);
+      }
+
+      resetForm();
+    } catch (error) {
+      toast.error("Failed to save student. Please try again.");
+      console.error(error);
     }
-    
-    resetForm();
   };
 
   const handleEditStudent = (student: Student) => {
@@ -100,12 +105,17 @@ export function StudentProfilesPage() {
     setShowDeleteModal(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (selectedStudent) {
-      deleteStudent(selectedStudent.id);
-      toast.success("Student deleted successfully");
-      setShowDeleteModal(false);
-      setSelectedStudent(null);
+      try {
+        await deleteStudent(selectedStudent.id);
+        toast.success("Student deleted successfully");
+        setShowDeleteModal(false);
+        setSelectedStudent(null);
+      } catch (error) {
+        toast.error("Failed to delete student. Please try again.");
+        console.error(error);
+      }
     }
   };
 
@@ -282,97 +292,104 @@ export function StudentProfilesPage() {
       >
         <Card>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-muted/50 border-b">
-                  <tr>
-                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Student ID</th>
-                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">LRN</th>
-                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Full Name</th>
-                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Grade/Section</th>
-                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Sex</th>
-                    <th className="text-left p-4 text-sm font-medium text-muted-foreground">Status</th>
-                    <th className="text-right p-4 text-sm font-medium text-muted-foreground">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <AnimatePresence mode="popLayout">
-                    {filteredStudents.map((student, index) => (
-                      <motion.tr
-                        key={student.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        transition={{ delay: index * 0.05 }}
-                        className="border-b last:border-0 hover:bg-muted/30 transition-colors"
-                      >
-                        <td className="p-4 text-sm">{student.studentId}</td>
-                        <td className="p-4 text-sm font-mono">{student.lrn}</td>
-                        <td className="p-4">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white text-xs font-medium">
-                              {student.fullName.charAt(0)}
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500 mx-auto mb-3"></div>
+                <p className="text-muted-foreground">Loading students...</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-muted/50 border-b">
+                    <tr>
+                      <th className="text-left p-4 text-sm font-medium text-muted-foreground">Student ID</th>
+                      <th className="text-left p-4 text-sm font-medium text-muted-foreground">LRN</th>
+                      <th className="text-left p-4 text-sm font-medium text-muted-foreground">Full Name</th>
+                      <th className="text-left p-4 text-sm font-medium text-muted-foreground">Grade/Section</th>
+                      <th className="text-left p-4 text-sm font-medium text-muted-foreground">Sex</th>
+                      <th className="text-left p-4 text-sm font-medium text-muted-foreground">Status</th>
+                      <th className="text-right p-4 text-sm font-medium text-muted-foreground">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <AnimatePresence mode="popLayout">
+                      {filteredStudents.map((student, index) => (
+                        <motion.tr
+                          key={student.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, x: -20 }}
+                          transition={{ delay: index * 0.05 }}
+                          className="border-b last:border-0 hover:bg-muted/30 transition-colors"
+                        >
+                          <td className="p-4 text-sm">{student.studentId}</td>
+                          <td className="p-4 text-sm font-mono">{student.lrn}</td>
+                          <td className="p-4">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white text-xs font-medium">
+                                {student.fullName.charAt(0)}
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-gray-900">{student.fullName}</p>
+                                {student.hasAllergy && (
+                                  <p className="text-xs text-amber-600 flex items-center gap-1">
+                                    <AlertTriangle className="w-3 h-3" />
+                                    Has allergies
+                                  </p>
+                                )}
+                              </div>
                             </div>
-                            <div>
-                              <p className="text-sm font-medium text-gray-900">{student.fullName}</p>
-                              {student.hasAllergy && (
-                                <p className="text-xs text-amber-600 flex items-center gap-1">
-                                  <AlertTriangle className="w-3 h-3" />
-                                  Has allergies
-                                </p>
-                              )}
+                          </td>
+                          <td className="p-4 text-sm">{student.grade} / {student.section}</td>
+                          <td className="p-4 text-sm">{student.sex}</td>
+                          <td className="p-4">
+                            <Badge variant={student.beneficiary ? "default" : "secondary"}>
+                              {student.beneficiary ? "Beneficiary" : "Non-Beneficiary"}
+                            </Badge>
+                          </td>
+                          <td className="p-4">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleEditStudent(student)}
+                                className="gap-1"
+                              >
+                                <Edit className="w-3 h-3" />
+                                Edit
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleDeleteClick(student)}
+                                className="gap-1 text-red-600 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                                Delete
+                              </Button>
                             </div>
-                          </div>
-                        </td>
-                        <td className="p-4 text-sm">{student.grade} / {student.section}</td>
-                        <td className="p-4 text-sm">{student.sex}</td>
-                        <td className="p-4">
-                          <Badge variant={student.beneficiary ? "default" : "secondary"}>
-                            {student.beneficiary ? "Beneficiary" : "Non-Beneficiary"}
-                          </Badge>
-                        </td>
-                        <td className="p-4">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleEditStudent(student)}
-                              className="gap-1"
-                            >
-                              <Edit className="w-3 h-3" />
-                              Edit
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleDeleteClick(student)}
-                              className="gap-1 text-red-600 hover:text-red-700 hover:bg-red-50"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                              Delete
-                            </Button>
-                          </div>
-                        </td>
-                      </motion.tr>
-                    ))}
-                  </AnimatePresence>
-                </tbody>
-              </table>
+                          </td>
+                        </motion.tr>
+                      ))}
+                    </AnimatePresence>
+                  </tbody>
+                </table>
 
-              {filteredStudents.length === 0 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-center py-12"
-                >
-                  <UserPlus className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                  <p className="text-muted-foreground">No students found</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {searchTerm || gradeFilter || sectionFilter ? "Try adjusting your filters" : "Add your first student to get started"}
-                  </p>
-                </motion.div>
-              )}
-            </div>
+                {filteredStudents.length === 0 && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-center py-12"
+                  >
+                    <UserPlus className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                    <p className="text-muted-foreground">No students found</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {searchTerm || gradeFilter || sectionFilter ? "Try adjusting your filters" : "Add your first student to get started"}
+                    </p>
+                  </motion.div>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
       </motion.div>
