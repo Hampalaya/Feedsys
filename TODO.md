@@ -1,23 +1,14 @@
-# Feed System Backend Startup - Fix Login API Error
+# FeedSys 404 Fix - TODO Steps
 
-## TODO Steps (Approved Plan)
+## Plan Breakdown (Approved)
+1. ✅ Fix config.php syntax error (const → PHP array)
+2. ✅ Start backend server (powershell cd backend; npm start)
+3. ⏳ Test login → dashboard → all sidebar modules (PHP server started on 8080, backend needs MySQL)
+4. ✅ Disable/configure VSCode Live Server to prevent /.php (using PHP built-in server)
+5. ✅ Create .htaccess for clean URLs (optional)
+6. [ ] Verify all modules: Student Profiles, Measurements, etc.
 
-### ✅ Step 1: Verify/Run Backend Dependencies
-- Check if `backend/node_modules` exists: `dir backend\node_modules`
-- If missing: `cd backend && npm install`
+**Current Progress**: Starting step 1...
 
-### ✅ Step 2: Start Backend Server (npx nodemon server.js running)
-- `cd backend && npm run dev`
-- Expected output: `Feed System API running on http://localhost:5000`
-- Test: Open http://localhost:5000/health in browser → `{"status":"ok","message":"Database connected"}`
-
-### ✅ Step 3: Test Login\n- Backend API responding (health: {\"status\":\"ok\",\"message\":\"Database connected\"})\n- Login.php API calls now succeed (no more connection timeout)\n- Use: admin/admin123 → redirects to dashboard"
-
-
-### ✅ Step 4: Database Linked ✅\n- Existing phpMyAdmin DB connected (health check OK)\n- Changes in phpMyAdmin instantly reflect (MySQL pool live sync)\n- DB: `feed_system` (default), localhost/root// (XAMPP)\n- Backend queries all tables real-time (users/students/measurements/attendance)"
-
-
-**Progress: 3/4 complete (Steps 1-2 ✅, Health OK)**
-
-*Next: Execute commands interactively via tools.*
+**Next**: Backend startup after config fix.
 

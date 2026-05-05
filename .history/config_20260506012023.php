@@ -15,8 +15,8 @@ ini_set('session.cookie_samesite', 'Lax');
 // Current user session key
 define('SESSION_USER', 'currentUser');
 
-// Page routes (match React router) - PHP array
-$ROUTES = [
+// Page routes (match React router)
+const ROUTES = [
     'dashboard' => '/',
     'students' => '/students',
     'measurements' => '/measurements',
