@@ -105,28 +105,10 @@
                 </form>
             </div>
         </div>
-        </div>
-        <div class="flex gap-2 pt-4">
-            <button onclick="exportMeasurementsCSV()" class="btn-gradient px-4 py-2 rounded-xl text-white font-medium shadow-lg">
-                <i data-lucide="download" class="w-4 h-4 inline mr-2"></i>Export CSV
-            </button>
-            <button onclick="exportMeasurementsPDF()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl text-white font-medium shadow-lg">
-                <i data-lucide="file-text" class="w-4 h-4 inline mr-2"></i>Export PDF
-            </button>
-        </div>
     </div>
 </div>
 
 <script>
-function exportMeasurementsCSV() {
-    const columns = ['studentName', 'measurementType', 'date', 'weight', 'height', 'bmi', 'nutritionalStatus'];
-    window.app.exportCSV(measurements, 'measurements.csv', columns);
-}
-
-function exportMeasurementsPDF() {
-    window.app.exportPDF(measurements, 'measurements.pdf', 'Anthropometric Measurements');
-}
-
 document.getElementById('page-title').textContent = 'Measurements';
 let measurements = [];
 let students = [];

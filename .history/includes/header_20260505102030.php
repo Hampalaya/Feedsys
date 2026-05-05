@@ -10,8 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="public/js/app-enhanced.js" defer></script>
-<script src="public/js/app.js" defer></script> <!-- fallback -->
+    <script src="public/js/app.js" defer></script>
     <link rel="stylesheet" href="public/css/app.css">
     <script>
         tailwind.config = {

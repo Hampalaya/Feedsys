@@ -139,27 +139,10 @@
                 </form>
             </div>
         </div>
-        <div class="flex gap-2 pt-4">
-            <button onclick="exportStudentsCSV()" class="btn-gradient px-4 py-2 rounded-xl text-white font-medium shadow-lg">
-                <i data-lucide="download" class="w-4 h-4 inline mr-2"></i>Export CSV
-            </button>
-            <button onclick="exportStudentsPDF()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl text-white font-medium shadow-lg">
-                <i data-lucide="file-text" class="w-4 h-4 inline mr-2"></i>Export PDF
-            </button>
-        </div>
     </div>
 </div>
 
 <script>
-function exportStudentsCSV() {
-    const columns = ['studentId', 'lrn', 'fullName', 'grade', 'section', 'sex', 'beneficiary'];
-    window.app.exportCSV(students, 'students.csv', columns);
-}
-
-function exportStudentsPDF() {
-    window.app.exportPDF(students, 'students.pdf', 'Student Profiles');
-}
-
 document.getElementById('page-title').textContent = 'Student Profiles';
 let students = [];
 let editingStudentId = null;
@@ -295,7 +278,7 @@ async function saveStudent(e) {
 async function deleteStudent(id) {
     if (confirm('Delete this student?')) {
         try {
-            await window.app.studentsAPI.delete(id);
+            await window.app.apiCall(`/students/${id}`, { method: 'DELETE' });
             toast('Student deleted', 'success');
             loadStudents();
         } catch (error) {
@@ -303,12 +286,6 @@ async function deleteStudent(id) {
         }
     }
 }
-
-function editStudent(id) {
-    const student = students.find(s => s.id === id);
-    if (student) openStudentModal(id);
-}
-
 
 // Init
 loadStudents();

@@ -282,29 +282,24 @@ function calculateStatusCounts(measurements) {
     return counts;
 }
 
-async function renderActivities() {
-    try {
-        const activities = await window.app.getRecentActivities() || [
-            { student: 'Juan Dela Cruz', action: 'Measurement recorded', time: '5 min ago', type: 'measurement' },
-            { student: 'Maria Santos', action: 'Attendance marked', time: '12 min ago', type: 'attendance' },
-            { student: 'Pedro Reyes', action: 'Profile updated', time: '1 hr ago', type: 'profile' }
-        ];
-        
-        document.getElementById('recent-activities').innerHTML = activities.slice(0, 5).map(activity => 
-            `<div class="flex items-start gap-4 p-3 hover:bg-gray-50 rounded-xl transition-colors">
-                <div class="w-2 h-2 rounded-full mt-2 ${activity.type === 'measurement' ? 'bg-blue-500' : activity.type === 'attendance' ? 'bg-green-500' : 'bg-purple-500'} flex-shrink-0"></div>
-                <div class="flex-1">
-                    <p class="text-sm"><span class="font-medium">${activity.student || activity.studentName}</span> – ${activity.action}</p>
-                    <p class="text-xs text-gray-500 mt-1">${activity.time}</p>
-                </div>
-            </div>`
-        ).join('') || '<p class="text-gray-500 text-center py-8">No recent activities</p>';
-    } catch (error) {
-        console.error('Activities load failed', error);
-    }
-    lucide.createIcons();
+function renderActivities() {
+    // Mock activities (replace with API later)
+    const activities = [
+        { student: 'Juan Dela Cruz', action: 'Measurement recorded', time: '5 min ago', type: 'measurement' },
+        { student: 'Maria Santos', action: 'Attendance marked', time: '12 min ago', type: 'attendance' },
+        { student: 'Pedro Reyes', action: 'Profile updated', time: '1 hr ago', type: 'profile' }
+    ];
+    
+    document.getElementById('recent-activities').innerHTML = activities.map(activity => 
+        `<div class="flex items-start gap-4 p-3 hover:bg-gray-50 rounded-xl transition-colors">
+            <div class="w-2 h-2 rounded-full mt-2 ${activity.type === 'measurement' ? 'bg-blue-500' : activity.type === 'attendance' ? 'bg-green-500' : 'bg-purple-500'} flex-shrink-0"></div>
+            <div class="flex-1">
+                <p class="text-sm"><span class="font-medium">${activity.student}</span> – ${activity.action}</p>
+                <p class="text-xs text-gray-500 mt-1">${activity.time}</p>
+            </div>
+        </div>`
+    ).join('');
 }
-
 
 // Init
 loadDashboard();

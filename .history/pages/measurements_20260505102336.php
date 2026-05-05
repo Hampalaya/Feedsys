@@ -105,28 +105,10 @@
                 </form>
             </div>
         </div>
-        </div>
-        <div class="flex gap-2 pt-4">
-            <button onclick="exportMeasurementsCSV()" class="btn-gradient px-4 py-2 rounded-xl text-white font-medium shadow-lg">
-                <i data-lucide="download" class="w-4 h-4 inline mr-2"></i>Export CSV
-            </button>
-            <button onclick="exportMeasurementsPDF()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl text-white font-medium shadow-lg">
-                <i data-lucide="file-text" class="w-4 h-4 inline mr-2"></i>Export PDF
-            </button>
-        </div>
     </div>
 </div>
 
 <script>
-function exportMeasurementsCSV() {
-    const columns = ['studentName', 'measurementType', 'date', 'weight', 'height', 'bmi', 'nutritionalStatus'];
-    window.app.exportCSV(measurements, 'measurements.csv', columns);
-}
-
-function exportMeasurementsPDF() {
-    window.app.exportPDF(measurements, 'measurements.pdf', 'Anthropometric Measurements');
-}
-
 document.getElementById('page-title').textContent = 'Measurements';
 let measurements = [];
 let students = [];
@@ -209,77 +191,9 @@ function openMeasurementModal(id) {
     document.getElementById('measurement-modal').classList.remove('hidden');
 }
 
-let editingMeasurementId = null;
-
-function openMeasurementModal(id) {
-    editingMeasurementId = id;
-    document.getElementById('measurement-title').textContent = id ? 'Edit Measurement' : 'Add Measurement';
-    document.getElementById('measurement-form').reset();
-    document.getElementById('bmi').value = '';
-    
-    if (id) {
-        const measurement = measurements.find(m => m.id === id);
-        document.getElementById('measurement-student').value = measurement.studentId;
-        document.getElementById('measurement-type').value = measurement.measurementType;
-        document.getElementById('measurement-date').value = measurement.date;
-        document.getElementById('measured-by').value = measurement.measuredBy;
-        document.getElementById('weight').value = measurement.weight;
-        document.getElementById('height').value = measurement.height;
-        document.getElementById('bmi').value = measurement.bmi.toFixed(1);
-        document.getElementById('measurement-remarks').value = measurement.remarks;
-    }
-    
-    document.getElementById('measurement-modal').classList.remove('hidden');
-}
-
-function closeMeasurementModal() {
-    document.getElementById('measurement-modal').classList.add('hidden');
-}
-
 async function saveMeasurement(e) {
-    e.preventDefault();
-    
-    const measurementData = {
-        studentId: document.getElementById('measurement-student').value,
-        measurementType: document.getElementById('measurement-type').value,
-        date: document.getElementById('measurement-date').value,
-        measuredBy: document.getElementById('measured-by').value,
-        weight: parseFloat(document.getElementById('weight').value),
-        height: parseFloat(document.getElementById('height').value),
-        remarks: document.getElementById('measurement-remarks').value,
-    };
-    
-    try {
-        if (editingMeasurementId) {
-            await window.app.measurementsAPI.update(editingMeasurementId, measurementData);
-            toast('Measurement updated', 'success');
-        } else {
-            await window.app.measurementsAPI.create(measurementData);
-            toast('Measurement added', 'success');
-        }
-        loadMeasurements();
-        closeMeasurementModal();
-    } catch (error) {
-        toast(error.message, 'error');
-    }
+    // AJAX create/update via app.apiCall
 }
-
-async function deleteMeasurement(id) {
-    if (confirm('Delete this measurement?')) {
-        try {
-            await window.app.measurementsAPI.delete(id);
-            toast('Measurement deleted', 'success');
-            loadMeasurements();
-        } catch (error) {
-            toast(error.message, 'error');
-        }
-    }
-}
-
-function editMeasurement(id) {
-    openMeasurementModal(id);
-}
-
 
 loadMeasurements();
 document.getElementById('measurement-search').oninput = renderTable;
