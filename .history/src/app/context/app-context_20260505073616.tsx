@@ -631,9 +631,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setCurrentUser(apiUser);
         return true;
       }
+      
+      // Fallback to mock authentication if API fails
+      if (username === "admin" && password === "admin123") {
+        setCurrentUser(users[0]);
+        return true;
+      } else if (username === "encoder" && password === "encoder123") {
+        setCurrentUser(users[1]);
+        return true;
+      }
       return false;
     } catch (error) {
       console.error('Login error:', error);
+      // Fallback to mock authentication
+      if (username === "admin" && password === "admin123") {
+        setCurrentUser(users[0]);
+        return true;
+      } else if (username === "encoder" && password === "encoder123") {
+        setCurrentUser(users[1]);
+        return true;
+      }
       return false;
     }
   };
