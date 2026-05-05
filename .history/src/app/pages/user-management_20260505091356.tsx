@@ -231,7 +231,7 @@ open={showAddModal}
             <Select
               id="role"
               value={formData.role}
-onChange={(e) => setFormData({ ...formData, role: e.target.value as "Administrator" | "Encoder" | "Viewer" })}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
             >
               <option value="Viewer">Viewer</option>
               <option value="Encoder">Encoder</option>

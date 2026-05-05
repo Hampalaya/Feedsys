@@ -29,7 +29,7 @@ export function StudentProfilesPage() {
     fullName: "",
     grade: "",
     section: "",
-sex: "Male",
+    sex: "Male" as "Male" | "Female",
     dateOfBirth: "",
     guardian: "",
     contactNumber: "",

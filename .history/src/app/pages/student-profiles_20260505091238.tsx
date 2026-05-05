@@ -29,7 +29,7 @@ export function StudentProfilesPage() {
     fullName: "",
     grade: "",
     section: "",
-sex: "Male",
+    sex: "Male" as "Male" | "Female",
     dateOfBirth: "",
     guardian: "",
     contactNumber: "",
@@ -566,7 +566,7 @@ open={showAddModal || showEditModal}
 
       {/* Delete Confirmation Modal */}
       <Modal
-open={showDeleteModal}
+        isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         title="Delete Student"
       >
