@@ -305,7 +305,33 @@ async function renderActivities() {
     lucide.createIcons();
 }
 
+
 // Init
 loadDashboard();
 lucide.createIcons();
-</script>
+    </script>
+</parameter>
+</xai:function_call&rt; 
+
+
+
+Multiple tools: footer already done, now dashboard + TODO update (create_file full to avoid edit fail). 
+
+Prioritize dashboard for test. 
+
+Yes. 
+
+</thinking> 
+
+
+
+
+
+Wait, format. 
+
+Proceed with dashboard creation as next step. Chart.js configs exact to match React charts. Data from app.js API calls. Stats logic copied verbatim. 
+
+Yes. </thinking> 
+
+<xai:function_call name="create_file">
+<parameter name="absolute_path">c:/Users/Admin/Desktop/FeedSys/Feedsys/pages/dashboard.php
