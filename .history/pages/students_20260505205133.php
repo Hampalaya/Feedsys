@@ -149,6 +149,14 @@
                 </form>
             </div>
         </div>
+        <div class="flex gap-2 pt-4">
+            <button onclick="exportStudentsCSV()" class="btn-gradient px-4 py-2 rounded-xl text-white font-medium shadow-lg">
+                <i data-lucide="download" class="w-4 h-4 inline mr-2"></i>Export CSV
+            </button>
+            <button onclick="exportStudentsPDF()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl text-white font-medium shadow-lg">
+                <i data-lucide="file-text" class="w-4 h-4 inline mr-2"></i>Export PDF
+            </button>
+        </div>
     </div>
 </div>
 

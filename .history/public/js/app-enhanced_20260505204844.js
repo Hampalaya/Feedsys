@@ -284,40 +284,6 @@ function exportPDF(data, filename = 'data.pdf', title = 'Report') {
     toast('PDF exported successfully', 'success');
 }
 
-// Users API
-const usersAPI = {
-    async getAll() {
-        const data = await apiCall('/users');
-        return data;
-    },
-    async get(id) {
-        const data = await apiCall(`/users/${id}`);
-        return data;
-    },
-    async create(userData) {
-        const apiData = {
-            username: userData.username,
-            password: userData.password,
-            full_name: userData.fullName,
-            email: userData.email,
-            role: userData.role,
-        };
-        return await apiCall('/users', { method: 'POST', body: JSON.stringify(apiData) });
-    },
-    async update(id, userData) {
-        const apiData = {
-            username: userData.username,
-            full_name: userData.fullName,
-            email: userData.email,
-            role: userData.role,
-        };
-        return await apiCall(`/users/${id}`, { method: 'PUT', body: JSON.stringify(apiData) });
-    },
-    async delete(id) {
-        return await apiCall(`/users/${id}`, { method: 'DELETE' });
-    }
-};
-
 // Load current user (async API or PHP DOM)
 async function loadUser() {
     try {
@@ -328,45 +294,6 @@ async function loadUser() {
     }
 }
 
-// Recent activities - returns last 10 activities from measurements and attendance
-async function getRecentActivities() {
-    try {
-        const [measurements, attendance] = await Promise.all([
-            measurementsAPI.getAll(),
-            attendanceAPI.getAll()
-        ]);
-        
-        const activities = [];
-        
-        // Add measurements
-        measurements.slice(0, 5).forEach(m => {
-            activities.push({
-                id: `m-${m.id}`,
-                type: 'measurement',
-                description: `${m.studentName} - BMI: ${m.bmi} (${m.nutritionalStatus})`,
-                date: new Date(m.date),
-                icon: 'activity'
-            });
-        });
-        
-        // Add attendance
-        attendance.slice(0, 5).forEach(a => {
-            activities.push({
-                id: `a-${a.id}`,
-                type: 'attendance',
-                description: `${a.studentName} - ${a.present ? 'Present' : 'Absent'} (${a.mealReceived ? 'Meal received' : 'No meal'})`,
-                date: new Date(a.date),
-                icon: 'check-circle'
-            });
-        });
-        
-        // Sort by date, newest first
-        return activities.sort((a, b) => b.date - a.date).slice(0, 10);
-    } catch (error) {
-        console.error('Failed to load recent activities:', error);
-        return [];
-    }
-}
 
 // Global app export
 window.app = {
@@ -374,14 +301,22 @@ window.app = {
     studentsAPI,
     measurementsAPI,
     attendanceAPI,
-    usersAPI,
     Student,
     Measurement,
     Attendance,
     exportCSV,
     exportPDF,
     loadUser,
-    getRecentActivities,
     toast
+};
+
+// Recent activities mock → API later
+window.app.getRecentActivities = async () => {
+    const allData = await Promise.all([
+        measurementsAPI.getAll(),
+        attendanceAPI.getAll()
+    ]);
+    // Logic to recent 5
+    return []; // Stub for dashboard
 };
 
