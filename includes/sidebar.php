@@ -21,28 +21,28 @@
             <a href="/" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md">
                 <i data-lucide="layout-dashboard" class="w-5 h-5"></i><span>Dashboard</span>
             </a>
-            <a href="students.php" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 hover:text-gray-900">
+            <a href="students" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 hover:text-gray-900">
                 <i data-lucide="users" class="w-5 h-5"></i><span>Student Profiles</span>
             </a>
-            <a href="measurements.php" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 hover:text-gray-900">
+            <a href="measurements" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 hover:text-gray-900">
                 <i data-lucide="ruler" class="w-5 h-5"></i><span>Measurements</span>
             </a>
-            <a href="monitoring.php" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 hover:text-gray-900">
+            <a href="monitoring" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 hover:text-gray-900">
                 <i data-lucide="utensils" class="w-5 h-5"></i><span>Feeding Monitoring</span>
             </a>
-            <a href="nutritional-status.php" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 hover:text-gray-900">
+            <a href="nutritional-status" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 hover:text-gray-900">
                 <i data-lucide="activity" class="w-5 h-5"></i><span>Nutritional Status</span>
             </a>
-            <a href="reports.php" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 hover:text-gray-900">
+            <a href="reports" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 hover:text-gray-900">
                 <i data-lucide="file-text" class="w-5 h-5"></i><span>Reports</span>
             </a>
-            <a href="validation.php" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 hover:text-gray-900">
+            <a href="validation" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 hover:text-gray-900">
                 <i data-lucide="check-square" class="w-5 h-5"></i><span>Data Validation</span>
             </a>
-            <a href="users.php" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 hover:text-gray-900">
+            <a href="users" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 hover:text-gray-900">
                 <i data-lucide="user-cog" class="w-5 h-5"></i><span>User Management</span>
             </a>
-            <a href="settings.php" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 hover:text-gray-900">
+            <a href="settings" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 hover:text-gray-900">
                 <i data-lucide="settings" class="w-5 h-5"></i><span>Settings</span>
             </a>
         </nav>

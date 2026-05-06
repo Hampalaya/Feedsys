@@ -5,9 +5,7 @@
  */
 
 // Backend API Base URL (match VITE_API_URL)
-// If the environment variable exists (DigitalOcean), use it. Otherwise, use localhost.
-$apiUrl = getenv('API_BASE_URL') ?: 'http://localhost:5000/api';
-define('API_BASE_URL', $apiUrl);
+define('API_BASE_URL', 'http://localhost:5000/api');
 
 // Session config
 ini_set('session.cookie_httponly', 1);
