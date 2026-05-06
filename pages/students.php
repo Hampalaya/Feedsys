@@ -169,9 +169,15 @@ let editingStudentId = null;
 // Load students
 async function loadStudents() {
     try {
+        console.log('Loading students...');
+        if (!window.app || !window.app.studentsAPI) {
+            console.error('API not ready during loadStudents');
+            return;
+        }
         students = await window.app.studentsAPI.getAll();
         renderTable();
     } catch (error) {
+        console.error('loadStudents failed:', error);
         toast('Failed to load students: ' + error.message, 'error');
         document.querySelector('#students-table tbody').innerHTML = '<tr><td colspan="8" class="text-center py-8 text-red-500">Failed to load data. Check backend.</td></tr>';
     }
@@ -269,6 +275,8 @@ async function saveStudent(e) {
         toast('System error: API not ready', 'error');
         return;
     }
+
+    const studentData = {
         studentId: document.getElementById('student-id').value,
         lrn: document.getElementById('lrn').value,
         fullName: document.getElementById('full-name').value,
