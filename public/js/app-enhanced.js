@@ -381,6 +381,5 @@ window.app = {
     exportCSV,
     exportPDF,
     loadUser,
-    getRecentActivities,
-    toast
+    getRecentActivities
 };
