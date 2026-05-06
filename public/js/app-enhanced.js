@@ -387,6 +387,11 @@ async function getRecentActivities() {
     }
 }
 
+// Ensure window.toast is defined even if not in app.js
+if (typeof window.toast === 'undefined') {
+    window.toast = (msg, type) => console.log(`[${type}] ${msg}`);
+}
+
 // Global app export
 window.app = {
     apiCall,
