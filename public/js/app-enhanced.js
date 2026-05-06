@@ -402,4 +402,5 @@ window.app = {
     loadUser,
     getRecentActivities,
 };
+console.log('FeedSys app-enhanced.js loaded and window.app initialized');
 
