@@ -260,9 +260,15 @@ function closeStudentModal() {
 }
 
 async function saveStudent(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    console.log('saveStudent function triggered');
     
-    const studentData = {
+    // Check if window.app or studentsAPI is missing
+    if (!window.app || !window.app.studentsAPI) {
+        console.error('window.app.studentsAPI is not initialized!');
+        toast('System error: API not ready', 'error');
+        return;
+    }
         studentId: document.getElementById('student-id').value,
         lrn: document.getElementById('lrn').value,
         fullName: document.getElementById('full-name').value,
