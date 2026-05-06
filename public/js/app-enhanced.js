@@ -384,4 +384,3 @@ window.app = {
     getRecentActivities,
     toast
 };
-
