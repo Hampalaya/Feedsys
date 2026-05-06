@@ -1,7 +1,11 @@
 // FeedSys Enhanced JS Utils - Full API wrappers + exports (Phase 2)
 // Builds on existing: apiCall, studentsAPI, Student/Measurement.fromApi, toast
 
-const API_BASE_URL = 'http://localhost:5000/api';
+// Use environment variable or default to localhost
+// For DigitalOcean, we use the naked path (/) if on production because DO strips /api
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+    ? 'http://localhost:5000/api'
+    : ''; // Empty string means use current domain root (e.g., https://api.example.com/students)
 
 // Enhanced apiCall with auth (PHP session cookie auto-sent via fetch)
 async function apiCall(endpoint, options = {}) {
@@ -15,14 +19,20 @@ async function apiCall(endpoint, options = {}) {
     const config = { ...defaults, ...options, credentials: 'include' }; // Send PHP session cookies
     
     try {
+        console.log(`Calling API: ${API_BASE_URL}${endpoint}`, config);
         const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+        console.log(`API Response Status: ${response.status} ${response.statusText}`);
+        
         if (!response.ok) {
             const error = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
+            console.error(`API Error Response:`, error);
             throw new Error(error.error || error.message || `HTTP ${response.status}`);
         }
-        return await response.json();
+        const data = await response.json();
+        console.log(`API Success Data:`, data);
+        return data;
     } catch (error) {
-        console.error(`API Error: ${endpoint}`, error);
+        console.error(`Fetch failure for ${endpoint}:`, error);
         throw error;
     }
 }
@@ -30,8 +40,9 @@ async function apiCall(endpoint, options = {}) {
 // Data Transformers (existing + new)
 const Student = {
     fromApi(data) {
+        if (!data) return null;
         return {
-            id: data.id.toString(),
+            id: (data.id || '').toString(),
             studentId: data.student_id,
             lrn: data.lrn || '',
             fullName: data.full_name,
@@ -112,6 +123,7 @@ const studentsAPI = {
         return Student.fromApi(data);
     },
     async create(studentData) {
+        console.log('Attempting to create student with data:', studentData);
         const apiData = {
             student_id: studentData.studentId,
             lrn: studentData.lrn,
@@ -127,7 +139,14 @@ const studentsAPI = {
             allergy_notes: studentData.allergyNotes,
             remarks: studentData.remarks,
         };
-        return await apiCall('/students', { method: 'POST', body: JSON.stringify(apiData) });
+        try {
+            const result = await apiCall('/students', { method: 'POST', body: JSON.stringify(apiData) });
+            console.log('Student created successfully:', result);
+            return result;
+        } catch (error) {
+            console.error('studentsAPI.create failed:', error);
+            throw error;
+        }
     },
     async update(id, studentData) {
         const apiData = {
@@ -381,5 +400,6 @@ window.app = {
     exportCSV,
     exportPDF,
     loadUser,
-    getRecentActivities
+    getRecentActivities,
 };
+
